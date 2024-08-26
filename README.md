@@ -22,14 +22,24 @@ git clone https://github.com/h-hg/yamb.yazi.git $env:APPDATA\yazi\config\plugins
 
 ## Usage
 
-Add this to your `init.lua`
+Add this to your `yazi/init.lua` (Linux: `~/.config/yazi/init.lua`)
+
+Note: If you're new to Lua, whenever you see `..` that means concatenate.
 
 ```lua
--- You can configure your bookmarks by lua language
+-- Create a table to programmatically add bookmarks
 local bookmarks = {}
 
+-- This variable equals to a separator character based on your platform
+-- Windows gets \
+-- Linux gets /
 local path_sep = package.config:sub(1, 1)
+
+-- Get the home directory based on platform
 local home_path = ya.target_family() == "windows" and os.getenv("USERPROFILE") or os.getenv("HOME")
+
+-- Add bookmarks programmatically
+-- Example 1: Add windows path pointing to the scoop directory
 if ya.target_family() == "windows" then
   table.insert(bookmarks, {
     tag = "Scoop Local",
@@ -43,6 +53,8 @@ if ya.target_family() == "windows" then
     key = "P"
   })
 end
+
+-- Example 2: Add a bookmark pointing to Desktop
 table.insert(bookmarks, {
   tag = "Desktop",
   path = home_path .. path_sep .. "Desktop" .. path_sep,
@@ -50,13 +62,14 @@ table.insert(bookmarks, {
 })
 
 require("yamb"):setup {
-  -- Optional, the path ending with path seperator represents folder.
+  -- Add the table we declared at the beginning to have bookmarks declared added to our list
   bookmarks = bookmarks,
   -- Optional, the cli of fzf.
   cli = "fzf",
   -- Optional, a string used for randomly generating keys, where the preceding characters have higher priority.
   keys = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
-  -- Optional, the path of bookmarks
+  -- Where is the bookmark file saved?
+  -- Check if we're on Win or Linux, assemble the correct path and assign it to variable path
   path = (ya.target_family() == "windows" and os.getenv("APPDATA") .. "\\yazi\\config\\bookmark") or
         (os.getenv("HOME") .. "/.config/yazi/bookmark"),
 }
